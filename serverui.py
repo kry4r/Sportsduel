@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'duel.ui'
+# Form implementation generated from reading ui file 'server.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -18,16 +18,16 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.enemy = QtWidgets.QLabel(self.centralwidget)
-        self.enemy.setGeometry(QtCore.QRect(80, 100, 431, 641))
+        self.enemy.setGeometry(QtCore.QRect(80, 80, 431, 661))
         self.enemy.setObjectName("enemy")
         self.self = QtWidgets.QLabel(self.centralwidget)
         self.self.setGeometry(QtCore.QRect(960, 80, 431, 651))
         self.self.setObjectName("self")
         self.start_button = PrimaryPushButton(self.centralwidget)
-        self.start_button.setGeometry(QtCore.QRect(630, 190, 153, 32))
+        self.start_button.setGeometry(QtCore.QRect(650, 190, 153, 32))
         self.start_button.setObjectName("start_button")
         self.Time = TimeEdit(self.centralwidget)
-        self.Time.setGeometry(QtCore.QRect(630, 140, 151, 33))
+        self.Time.setGeometry(QtCore.QRect(650, 140, 151, 33))
         self.Time.setObjectName("Time")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)

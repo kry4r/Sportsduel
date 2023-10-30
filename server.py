@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from duel import Ui_MainWindow
+from serverui import Ui_MainWindow
 from qfluentwidgets import setThemeColor,ThemeColor
 
 #python -m PyQt5.uic.pyuic duel.ui -o duel.py
@@ -31,8 +31,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._startPos = None
             self._endPos = None
     
-    def close_window(self):
-        self.close_window()
 
 
 if __name__ == '__main__':
