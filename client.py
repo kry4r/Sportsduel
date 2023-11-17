@@ -25,15 +25,15 @@ import threading
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self,path,port):
+    def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlags(Qt.FramelessWindowHint)   
         #self.close_button.clicked.connect(self.close_window)
-        self.server_path = (path,port)
         self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.start_button.clicked.connect(self.process)
         self.connect_button.clicked.connect(self.connect)     
+        self.is_connect = False
         
     def mouseMoveEvent(self, e: QMouseEvent):
         if self._tracking:
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._startPos = None
             self._endPos = None
     
-    def process_recv(self):
+    async def process_recv(self):
         while True:
             self.sock.recv(1024)
             nparr = np.fromstring(data, dtype='uint8', sep='')
@@ -59,7 +59,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.enemy.setPixmap(QPixmap.fromImage(img))
             self.enemy.setScaledContents(True)
 
-    def process_send(self,flag):
+    async def process_send(self,flag):
         mkfile_time = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d-%H-%M-%S')
         if not os.path.exists('./video-output'):
             os.mkdir('./video-output')
@@ -70,7 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif flag == 3:
             class_name = 'pull_up'
         cv2.namedWindow('video', cv2.WINDOW_NORMAL)
-        video_cap = cv2.VideoCapture(0)
+        video_cap = cv2.VideoCapture(a.mp4)
 
         # Get some video parameters to generate output video with classificaiton.
         # video_n_frames = video_cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -80,7 +80,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Initilize tracker, classifier and counter.
         # Do that before every video as all of them have state.
-
+        """
         # Folder with pose class CSVs. That should be the same folder you using while
         # building classifier to output CSVs.
         pose_samples_folder = 'pose'
@@ -187,6 +187,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #cv2.imshow('video', cv2.cvtColor(np.array(output_frame), cv2.COLOR_RGB2BGR))
             self.self.setPixmap(QPixmap.fromImage(output_frame))
             self.self.setScaledContents(True)
+            """
+        while video_cap.isOpened():
+            # Get next frame of the video.
+            success, output_frame = video_cap.read()
+            if not success:
+                break
             img_encode = cv2.imencode('.jpg', output_frame)[1]
             data = np.array(img_encode)  # 转化为矩阵
             byte_encode = data.tobytes()  # 编码格式转为字节格式
@@ -207,22 +213,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pose_tracker.close()
 
     def connect(self):
-        self.sock.connect(self.server_path)
+        self.sock.connect(("127.0.0.1",8888))
         self.is_connect = True
     def process(self):
         if(self.is_connect == True):
-            t1 = threading.Thread(target=self.process_recv(),args=(1, 1))
-            t2 = threading.Thread(target=self.process_send(1),args=(2, 2))
+            self.sock.send("start")
+            t1 = threading.Thread(target=self.process_recv())
+            t2 = threading.Thread(target=self.process_send(1))
             t1.start()
             t2.start()
-            t1.join()
-            t2.join()
 
 if __name__ == '__main__':
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication(sys.argv)
-    window = MainWindow('192.168.0.103',7788)
+    window = MainWindow()
     window.show()
     sys.exit(app.exec_())
