@@ -123,3 +123,25 @@ function localDescCreated(desc) {
       onError
     );
   }
+
+  function showPopup(winner) {
+  var popup = document.getElementById('popup');
+  var winnerText = document.getElementById('winnerText');
+  winnerText.textContent = winner + '胜出！';
+  popup.style.display = 'block';
+
+  // 设置1秒后关闭popup box
+  setTimeout(function() {
+    popup.style.display = 'none';
+  }, 1000); // 1000毫秒后执行，即1秒后
+}
+
+// Set the popup to show after 5 seconds
+setTimeout(function() {
+  // Replace this with your actual condition
+  if (true) {
+    showPopup('我方');
+  } else{
+    showPopup('对方');
+  }
+}, 10000);
