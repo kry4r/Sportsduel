@@ -23,12 +23,6 @@ def read_csv(path):
     return final_list
 
 
-def show_image(img, figsize=(10, 10)):
-    """Shows output PIL image."""
-    plt.figure(figsize=figsize)
-    plt.imshow(img)
-    plt.show()
-
 
 def video_process(video_path, flag):
     mkfile_time = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d-%H-%M-%S')
