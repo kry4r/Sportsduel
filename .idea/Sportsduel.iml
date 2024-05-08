@@ -6,6 +6,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Sportsduel" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="scaledrone" level="application" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />
