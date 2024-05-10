@@ -18,7 +18,6 @@ import poseembedding as pe  # 姿态关键点编码模块
 import poseclassifier as pc  # 姿态分类器
 import resultsmooth as rs  # 分类结果平滑
 import counter  # 动作计数器
-import visualizer as vs  # 可视化模块
 
 
 async def process(ws, frame_gen):
@@ -67,19 +66,13 @@ async def process(ws, frame_gen):
         enter_threshold=5,
         exit_threshold=4)
 
-    # Initialize renderer.
-    pose_classification_visualizer = vs.PoseClassificationVisualizer(
-        class_name=class_name,
-        # plot_x_max=video_n_frames,
-        # Graphic looks nicer if it's the same as `top_n_by_mean_distance`.
-        plot_y_max=10)
 
     # Run classification on a video.
 
     # frame_idx = 0
     output_frame = None
     # with tqdm.tqdm(total=video_n_frames, position=0, leave=True) as pbar:
-    for input_frame in frame_gen:
+    async for input_frame in frame_gen:
         # Get next frame of the video.
         input_frame = cv2.cvtColor(input_frame, cv2.COLOR_BGR2RGB)
         result = pose_tracker.process(image=input_frame)
@@ -108,7 +101,7 @@ async def process(ws, frame_gen):
 
             # Count repetitions.
             repetitions_count = repetition_counter(pose_classification_filtered)
-            ws.send_str(repetitions_count)
+            await ws.send_str(str(repetitions_count))
         else:
             # No pose => no classification on current frame.
             pose_classification = None
@@ -121,7 +114,7 @@ async def process(ws, frame_gen):
             # Don't update the counter presuming that person is 'frozen'. Just
             # take the latest repetitions count.
             repetitions_count = repetition_counter.n_repeats
-            ws.send_str(repetitions_count)
+            await ws.send_str(str(repetitions_count))
 
     # Close output video.
     pose_tracker.close()
@@ -145,9 +138,7 @@ async def websocket_handler(request):
     print("已连接")
 
     # 创建一个设备对象，这里我们使用默认设备
-    player = MediaPlayer('video=Logi USB Camera', format='dshow', options={
-        'video_size': '640x480'
-    })
+    player = MediaPlayer('default:none', format='avfoundation',options = {'framerate': '30', 'video_size': '640x480'})
     # 创建一个媒体接收器，这里我们将视频流保存到文件
     recorder = MediaRecorder("file.mp4")
 
