@@ -18,17 +18,13 @@ import poseembedding as pe  # 姿态关键点编码模块
 import poseclassifier as pc  # 姿态分类器
 import resultsmooth as rs  # 分类结果平滑
 import counter  # 动作计数器
-
+import time
 
 async def process(ws, frame_gen):
     class_name = 'squat_down'
 
     # Get some video parameters to generate output video with classificaiton.
     # video_n_frames = video_cap.get(cv2.CAP_PROP_FRAME_COUNT)
-    video_fps = 24
-    video_width = 640
-    video_height = 480
-
     # Initilize tracker, classifier and counter.
     # Do that before every video as all of them have state.
 
@@ -74,6 +70,8 @@ async def process(ws, frame_gen):
     # with tqdm.tqdm(total=video_n_frames, position=0, leave=True) as pbar:
     async for input_frame in frame_gen:
         # Get next frame of the video.
+        start_time = time.time()
+
         input_frame = cv2.cvtColor(input_frame, cv2.COLOR_BGR2RGB)
         result = pose_tracker.process(image=input_frame)
         pose_landmarks = result.pose_landmarks
@@ -115,6 +113,8 @@ async def process(ws, frame_gen):
             # take the latest repetitions count.
             repetitions_count = repetition_counter.n_repeats
             await ws.send_str(str(repetitions_count))
+            end_time = time.time()  # End time
+            print(f"Processed one frame in {end_time - start_time} seconds")
 
     # Close output video.
     pose_tracker.close()
