@@ -1,18 +1,9 @@
 from aiortc import MediaStreamTrack, VideoStreamTrack
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder
 from aiohttp import web
-import av
-import cv2
-import numpy as np
 import asyncio
-import time
-import datetime
-import os
-from matplotlib import pyplot as plt
 import cv2
 import numpy as np
-import tqdm
-from mediapipe.python.solutions import drawing_utils as mp_drawing
 from mediapipe.python.solutions import pose as mp_pose
 import poseembedding as pe  # 姿态关键点编码模块
 import poseclassifier as pc  # 姿态分类器
@@ -78,11 +69,7 @@ async def process(ws, frame_gen):
 
         # Draw pose prediction.
         output_frame = input_frame.copy()
-        if pose_landmarks is not None:
-            mp_drawing.draw_landmarks(
-                image=output_frame,
-                landmark_list=pose_landmarks,
-                connections=mp_pose.POSE_CONNECTIONS)
+
 
         if pose_landmarks is not None:
             # Get landmarks.
@@ -138,7 +125,9 @@ async def websocket_handler(request):
     print("已连接")
 
     # 创建一个设备对象，这里我们使用默认设备
-    player = MediaPlayer('default:none', format='avfoundation',options = {'framerate': '30', 'video_size': '640x480'})
+    player = MediaPlayer('video=e2eSoft iVCam', format='dshow', options={
+        'video_size': '640x480'
+    })
     # 创建一个媒体接收器，这里我们将视频流保存到文件
     recorder = MediaRecorder("file.mp4")
 
